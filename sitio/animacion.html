@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Secciones normales (scroll vertical) */
+        .section {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        background: #eee;
+        border-bottom: 1px solid #ccc;
+        }
+
+        /* Contenedor lateral */
+        #lateral-scroll {
+        display: flex; /* Alinear ítems en fila */
+        overflow: hidden; /* Ocultar desbordamiento */
+        width: 100vw; /* Ancho completo del viewport */
+        height: 100vh; /* Alto completo del viewport */
+        background: #333;
+        }
+
+        /* Ítems laterales */
+        .slide_attribute {
+        flex: 0 0 auto; /* Los elementos no deben encogerse ni crecer */
+        width: 100vw; /* Cada ítem ocupa el ancho del viewport */
+        height: 100vh; /* Alto del viewport */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        color: white;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+    <div class="section">Scroll vertical - Sección 1</div>
+    <div class="section">Scroll vertical - Sección 2</div>
+
+    <!-- Sección lateral -->
+    <div id="lateral-scroll">
+    <div class="slide_attribute" style="background: #ffcccc;">Item 1</div>
+    <div class="slide_attribute" style="background: #ccffcc;">Item 2</div>
+    <div class="slide_attribute" style="background: #ccccff;">Item 3</div>
+    </div>
+
+    <div class="section">Scroll vertical - Sección 3</div>
+    <div class="section">Scroll vertical - Sección 4</div>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Seleccionar elementos
+        const lateralSection = document.querySelector("#lateral-scroll"); // Sección para scroll lateral
+        const items = document.querySelectorAll(".slide_attribute"); // Elementos dentro de scroll lateral
+        const lateralWidth = Array.from(items).reduce((acc, item) => acc + item.offsetWidth, 0); // Ancho total de los ítems
+
+        // Animación lateral
+        gsap.to(items, {
+        x: () => `-${lateralWidth - window.innerWidth}px`, // Mover todos los elementos a la izquierda
+        ease: "none",
+        scrollTrigger: {
+            trigger: lateralSection, // Activa en la sección de scroll lateral
+            pin: true, // Fija la sección
+            scrub: 1, // Sincroniza el scroll con la animación
+            start: "top top", // Inicia cuando la sección está en el viewport
+            end: () => `+=${lateralWidth}`, // Termina después del ancho total
+            markers: true, // Mostrar puntos de depuración (opcional)
+        },
+        });
+    </script>
+</body>
+</html>
+
+

@@ -15,3 +15,8 @@ Ejecutar: docker rmi <ID imagen>
 
 ## Forsar eleiminar imagen
 Ejecutar: docker rmi -f <ID imagen>
+
+
+## Ejecutar la imagen
+docker run -it --rm -d -p 8080:80 --name web sitioweb
+docker run -it --rm -d -p 8080:80 --name sitio -v ${PWD}/sitio:/usr/share/nginx/html nginx:latest

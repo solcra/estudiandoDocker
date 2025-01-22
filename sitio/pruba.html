@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let selectDeparment = document.getElementById('department');
+            let selectCities = document.getElementById('cities');
+            let send = document.getElementById('send');
+            let data = [];
+
+            // Fetch del archivo JSON desde la URL proporcionada
+            fetch('./municipios.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al cargar los datos desde la API");
+                    }
+                    return response.json();
+                })
+                .then(jsonData => {
+                    if (jsonData.success === 1) {
+                        data = jsonData.data;
+                        populateDepartments(data);
+                    } else {
+                        console.error("La API no devolvió resultados exitosos");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error.message);
+                });
+
+            // Poblar el selector de departamentos
+            function populateDepartments(data) {
+                const departments = [...new Set(data.map(item => item.NOMBRE_DPT))]; // Obtener departamentos únicos
+                selectDeparment.innerHTML = '<option value="">Seleccione un departamento</option>';
+                departments.forEach(department => {
+                    const option = document.createElement('option');
+                    option.value = department;
+                    option.textContent = department;
+                    selectDeparment.appendChild(option);
+                });
+            }
+
+            // Evento de cambio en el selector de departamentos
+            selectDeparment.addEventListener('change', event => {
+                const selectedDepartment = event.target.value;
+
+                // Limpiar el selector de ciudades
+                selectCities.innerHTML = '<option value="">Seleccione una ciudad</option>';
+
+                if (selectedDepartment) {
+                    const cities = data
+                        .filter(item => item.NOMBRE_DPT === selectedDepartment) // Filtrar ciudades del departamento seleccionado
+                        .map(item => item.NOMBRE_MPI); // Obtener solo los nombres de las ciudades
+                    populateCities(cities);
+                }
+
+                validateSelects();
+            });
+
+            // Poblar el selector de ciudades
+            function populateCities(cities) {
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    selectCities.appendChild(option);
+                });
+            }
+
+            // Validar selects y habilitar/deshabilitar el botón "send"
+            function validateSelects() {
+                const allValid = Array.from(document.querySelectorAll("select")).every(select => select.value.trim() !== "");
+                send.disabled = !allValid;
+            }
+
+            // Escuchar cambios en los selects para validación
+            document.querySelectorAll("select").forEach(select => {
+                select.addEventListener("change", validateSelects);
+            });
+
+            // Ejecutar validación inicial
+            validateSelects();
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <select id="department"></select>
+        <select id="cities"></select>
+        <button id="send" disabled>Enviar</button>
+    </div>
+</body>
+</html>
