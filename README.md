@@ -19,4 +19,4 @@ Ejecutar: docker rmi -f <ID imagen>
 
 ## Ejecutar la imagen
 docker run -it --rm -d -p 8080:80 --name web sitioweb
-docker run -it --rm -d -p 8080:80 --name sitio -v ${PWD}/sitio:/usr/share/nginx/html nginx:latest
+docker run -it --rm -d -p 8080:80 --name web -v ${PWD}/sitio:/usr/share/nginx/html web:sitioweb
